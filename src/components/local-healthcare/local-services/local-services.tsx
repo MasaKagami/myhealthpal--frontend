@@ -79,9 +79,10 @@ export default function LocalHealthcareServices() {
           type="range"
           min="1"
           max="10"
+          step="0.05"
           value={radius}
           onChange={(e) => setRadius(Number(e.target.value))}
-          className="range range-primary w-1/5"
+          className="range range-primary w-1/3"
         />
       </div>
       {error ? (
