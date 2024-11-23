@@ -63,7 +63,7 @@ export default function UserForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-2">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-2 w-full items-center justify-center">
       <label className="form-control w-full max-w-xs">
         <div className="label">
           <span className="label-text">Email</span>
@@ -145,7 +145,7 @@ export default function UserForm() {
       </label>
 
 
-      <button type="submit" className="btn bg-myblue hover:bg-gray-500 border-none rounded-full mt-2 text-white" disabled={loading}>
+      <button type="submit" className="w-full max-w-xs btn bg-myblue hover:bg-gray-500 border-none rounded-full mt-2 text-white" disabled={loading}>
         {loading ? "Submitting..." : "Submit"}
       </button>
       {error && <p className="text-red-500">{error}</p>}
