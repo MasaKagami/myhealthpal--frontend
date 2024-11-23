@@ -64,69 +64,88 @@ export default function UserForm() {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-2">
-      <label className="input input-bordered flex items-center gap-2">
-        Email
+      <label className="form-control w-full max-w-xs">
+        <div className="label">
+          <span className="label-text">Email</span>
+        </div>
         <input
           name="email"
           required
           type="email"
-          className="grow"
+          className="input input-bordered input-ghost w-full max-w-xs focus:bg-white focus:outline-none"
           placeholder="john.doe@gmail.com"
           value={user.email}
           onChange={handleChange}
         />
       </label>
-      <label className="input input-bordered flex items-center gap-2">
-        First Name
+
+      <label className="form-control w-full max-w-xs">
+        <div className="label">
+          <span className="label-text">First Name</span>
+        </div>
         <input
           name="firstName"
           required
           type="text"
-          className="grow"
+          className="input input-bordered input-ghost w-full max-w-xs focus:bg-white focus:outline-none"
           placeholder="John"
           value={user.firstName}
           onChange={handleChange}
         />
       </label>
-      <label className="input input-bordered flex items-center gap-2">
-        Last Name
+
+      <label className="form-control w-full max-w-xs">
+        <div className="label">
+          <span className="label-text">Last Name</span>
+        </div>
         <input
           name="lastName"
           required
           type="text"
-          className="grow"
+          className="input input-bordered input-ghost w-full max-w-xs focus:bg-white focus:outline-none"
           placeholder="Doe"
           value={user.lastName}
           onChange={handleChange}
         />
       </label>
-      <label className="input input-bordered flex items-center gap-2">
-        Age
+
+      <label className="form-control w-full max-w-xs">
+        <div className="label">
+          <span className="label-text">Age</span>
+        </div>
         <input
           name="age"
           required
           type="number"
-          className="grow"
+          className="input input-bordered input-ghost w-full max-w-xs focus:bg-white focus:outline-none"
           placeholder="27"
-          value={user.age}
+          value={user.age === 0 ? "" : user.age}
           onChange={handleChange}
         />
       </label>
-      <select
-        name="gender"
-        className="select select-bordered w-full max-w-xs"
-        value={user.gender}
-        onChange={handleChange}
-        required
-      >
-        <option value="" disabled>
-          Gender
-        </option>
-        <option value="Male">Male</option>
-        <option value="Female">Female</option>
-        <option value="Other">Other</option>
-      </select>
-      <button type="submit" className="btn btn-success mt-2 text-white" disabled={loading}>
+
+      <label className="form-control w-full max-w-xs">
+        <div className="label">
+          <span className="label-text">Gender</span>
+        </div>
+        <select
+          name="gender"
+          className="select select-bordered select-ghost w-full max-w-xs focus:bg-white focus:outline-none"
+          value={user.gender}
+          onChange={handleChange}
+          required
+        >
+          <option value="" disabled>
+            Select your gender
+          </option>
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+          <option value="Other">Other</option>
+        </select>
+      </label>
+
+
+      <button type="submit" className="btn bg-myblue hover:bg-gray-500 border-none rounded-full mt-2 text-white" disabled={loading}>
         {loading ? "Submitting..." : "Submit"}
       </button>
       {error && <p className="text-red-500">{error}</p>}

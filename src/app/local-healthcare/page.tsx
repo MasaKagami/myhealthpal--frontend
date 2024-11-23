@@ -6,9 +6,9 @@ import Navbar from "@/components/navbar/navbar";
 export default function LocalHealthCareServicesPage() {
 
     return (
-        <>  
-            <Navbar />
-            <div className="container mx-auto p-4">
+        <>
+            <div className="flex flex-col h-screen w-full max-w-[80%] m-auto">  
+                <Navbar />
                 <LocalHealthcareServices />
             </div>
             <Footer />

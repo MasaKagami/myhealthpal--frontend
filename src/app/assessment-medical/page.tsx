@@ -19,10 +19,10 @@ export default function MedicalAssement(){
     };
 
     return(
-        <div className="flex flex-col h-screen w-full">
+        <div className="flex flex-col h-screen w-full max-w-[80%] m-auto">
             <Navbar/>
             <div className="h-full w-full flex flex-col items-center justify-center gap-4">
-                <h1 className="text-2xl font-semibold">Your Health and Lifestyle</h1>
+                <h1 className="text-2xl text-myblue font-semibold">Your Health and Lifestyle</h1>
                 <form 
                     onSubmit={handleSubmit}  
                     className="flex flex-col gap-2"
@@ -65,7 +65,7 @@ export default function MedicalAssement(){
                     </select>
                     <button 
                         type="submit"
-                        className="btn btn-success mt-2 text-white"
+                        className="btn bg-myblue hover:bg-gray-500 border-none rounded-full mt-2 text-white"
                     >
                         Submit
                     </button>

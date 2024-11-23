@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import Loading from "@mui/material/CircularProgress";
+// import Loading from "@mui/material/CircularProgress";
 
 interface Location {
   latitude: number;
@@ -127,7 +127,7 @@ export default function LocalHealthcareServices() {
         </div>
       ) : (
         <div className="flex justify-center items-center h-64">
-          <Loading />
+          {/* <Loading /> */}
         </div>
       )}
     </div>
