@@ -13,55 +13,14 @@ interface HealthCarePlace {
   address: string;
   latitude: number;
   longitude: number;
-  link?: string; // Made optional
+  link?: string;
 }
-
-const healthcareDatabase: HealthCarePlace[] = [
-  {
-    name: "Montreal General Hospital",
-    address: "1650 Cedar Ave, Montreal, QC",
-    latitude: 45.4971,
-    longitude: -73.5862,
-  },
-  {
-    name: "Jewish General Hospital",
-    address: "3755 Côte-Sainte-Catherine Rd, Montreal, QC",
-    latitude: 45.4965,
-    longitude: -73.6278,
-  },
-  {
-    name: "Saint Mary's Hospital",
-    address: "3830 Lacombe Ave, Montreal, QC",
-    latitude: 45.4916,
-    longitude: -73.6228,
-  },
-];
 
 export default function LocalHealthcareServices() {
   const [location, setLocation] = useState<Location | null>(null);
   const [nearbyHealthcarePlaces, setNearbyHealthcarePlaces] = useState<HealthCarePlace[]>([]);
   const [error, setError] = useState<string | null>(null);
-
-  const calculateDistance = (
-    userLat: number,
-    userLon: number,
-    listingLat: number,
-    listingLon: number
-  ): number => {
-    const R = 6371;
-    const toRadians = (degree: number) => (degree * Math.PI) / 180;
-    const dLat = toRadians(listingLat - userLat);
-    const dLon = toRadians(listingLon - userLon);
-    const lat1 = toRadians(userLat);
-    const lat2 = toRadians(listingLat);
-
-    const a =
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-    return R * c;
-  };
+  const [radius, setRadius] = useState<number>(10);
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -82,29 +41,30 @@ export default function LocalHealthcareServices() {
 
   useEffect(() => {
     if (location) {
-      const maxDistance = 10;
-
-      const filteredPlaces = healthcareDatabase
-        .map((place) => {
-          const distance = calculateDistance(
-            location.latitude,
-            location.longitude,
-            place.latitude,
-            place.longitude
+      const fetchNearbyHealthcarePlaces = async () => {
+        try {
+          const maxDistance = 10; 
+          const response = await fetch(
+            `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/healthcare-places/nearby?latitude=${location.latitude}&longitude=${location.longitude}&maxDistance=${maxDistance}`
           );
 
-          if (distance <= maxDistance) {
-            return {
-              ...place,
-              link: `https://www.google.com/maps?q=${place.latitude},${place.longitude}`, 
-            };
+          if (!response.ok) {
+            throw new Error("Failed to fetch nearby healthcare places");
           }
 
-          return null; 
-        })
-        .filter((place) => place !== null) as HealthCarePlace[]; 
+          const data: HealthCarePlace[] = await response.json();
+          setNearbyHealthcarePlaces(
+            data.map((place) => ({
+              ...place,
+              link: `https://www.google.com/maps?q=${place.latitude},${place.longitude}`,
+            }))
+          );
+        } catch (error) {
+          setError("There was an error fetching nearby healthcare places");
+        }
+      };
 
-      setNearbyHealthcarePlaces(filteredPlaces);
+      fetchNearbyHealthcarePlaces();
     }
   }, [location]);
 
@@ -122,8 +82,8 @@ export default function LocalHealthcareServices() {
                 <p>Address: {place.address}</p>
                 <div className="card-actions justify-end">
                   {place.link ? (
-                    <Link href={place.link}>
-                      <div className="btn btn-primary">View Details</div>
+                    <Link href={place.link} target="_blank" rel="noopener noreferrer">
+                      <div className="btn btn-primary">View On Map</div>
                     </Link>
                   ) : (
                     <div className="btn btn-disabled">Out of Range</div>
