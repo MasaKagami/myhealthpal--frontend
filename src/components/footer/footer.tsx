@@ -1,7 +1,7 @@
 export default function Footer() {
     return (
         <footer className="footer p-10 bg-base-200 text-base-content">
-            <div>
+            <div className="max-w-[80%] m-auto">
                 <span className="footer-title">Services</span>
                 <a className="link link-hover">Local Healthcare Services</a>
                 <a className="link link-hover">Emergency Hotlines</a>
