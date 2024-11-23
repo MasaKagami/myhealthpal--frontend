@@ -4,6 +4,7 @@ export default function Footer() {
             <div>
                 <span className="footer-title">Services</span>
                 <a className="link link-hover">Local Healthcare Services</a>
+                <a className="link link-hover">Emergency Hotlines</a>
                 <a className="link link-hover">Mental Health Support</a>
                 <a className="link link-hover">Fitness Programs</a>
             </div>

@@ -9,6 +9,18 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  images: {
+    domains: [
+      "www.mcgill.ca",
+      "muhc.ca",
+      "www.smhc.qc.ca",
+      "www.decasult.com",
+      "images.loopnet.ca",
+      "upload.wikimedia.org",
+      "imtl.org",
+      "monde.ccdmd.qc.ca",
+    ],
+  }
 };
 
 export default nextConfig;
