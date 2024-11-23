@@ -19,7 +19,7 @@ export default function MedicalAssement(){
     };
 
     return(
-        <div className="flex flex-col h-screen w-full max-w-[80%] m-auto">
+        <div className="flex flex-col h-screen w-full">
             <Navbar/>
             <div className="h-full w-full flex flex-col items-center justify-center gap-4">
                 <h1 className="text-2xl font-semibold">Your Health and Lifestyle</h1>
