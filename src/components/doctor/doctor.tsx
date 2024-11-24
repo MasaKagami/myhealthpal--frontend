@@ -130,8 +130,8 @@ export default function DoctorChat({ sessionId }: { sessionId: number }) {
   };
 
   return (
-    <div className="flex flex-col w-full max-w-3xl relative">
-      <div className="h-96 overflow-y-auto p-4 border rounded-lg bg-transparent border-none">
+    <div className="flex flex-col w-full m-auto max-w-3xl justify-end pb-8 h-full relative">
+      <div className="h-full overflow-y-scroll max-h-[380px] p-4 border rounded-lg bg-transparent border-none ">
         {messages.length <= 2 ? (
           <p className="text-center flex items-center justify-center h-full text-gray-500">
             {/* You can add a starter message here if needed */}
@@ -176,11 +176,13 @@ export default function DoctorChat({ sessionId }: { sessionId: number }) {
         {/* Camera Button */}
         <button
           onClick={() => setShowCamera(true)}
-          className="btn bg-transparent hover:bg-gray-300 text-myblue p-2 rounded-full focus:outline-none"
+          className="relative bg-red-700 text-myblue p-2 rounded-full focus:outline-none w-6 h-12 overflow-hidden"
           title="Open Camera"
         >
-          📷
+          <span className="absolute top-0 left-0 w-full h-1/2 bg-blue-700"></span>
+          {/* Open Camera */}
         </button>
+
         {/* Send Button */}
         <button 
           onClick={handleSendMessage} 
