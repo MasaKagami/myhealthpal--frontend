@@ -3,7 +3,6 @@
 import Link from "next/link";
 import Image, { StaticImageData } from "next/image";
 import { useEffect, useState } from "react";
-// import Loading from "@mui/material/CircularProgress";
 
 import image1 from "@/assets/healthcare_images/hospital_1.jpg";
 import image2 from "@/assets/healthcare_images/hospital_2.jpg";
@@ -46,7 +45,7 @@ export default function LocalHealthcareServices() {
   const [location, setLocation] = useState<Location | null>(null);
   const [nearbyHealthcarePlaces, setNearbyHealthcarePlaces] = useState<HealthCarePlace[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [radius, setRadius] = useState<number>(10); // Default radius in kilometers
+  const [radius, setRadius] = useState<number>(10); 
 
   useEffect(() => {
     if (navigator.geolocation) {
