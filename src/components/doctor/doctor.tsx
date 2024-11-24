@@ -133,7 +133,7 @@ export default function DoctorChat({ sessionId }: { sessionId: number }) {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyPress={handleKeyPress}
-          className="input input-bordered flex-1 text-white placeholder-grey-400 bg-gray-800"
+          className="input input-bordered input-ghost flex-1  placeholder-grey-400 focus:text-gray-800 focus:bg-[#f5f5f5]"
         />
         <button 
           onClick={handleSendMessage} 
