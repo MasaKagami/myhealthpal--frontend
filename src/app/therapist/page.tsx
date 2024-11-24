@@ -67,6 +67,51 @@ const SpeechToTextPage: React.FC = () => {
     }
   }, [messages]);
 
+  const playTextToSpeech = async (text: string) => {
+    try {
+      const response = await fetch("/api/textToSpeech", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          text,
+          languageCode: 'en-US',
+          voiceName: 'en-US-Neural2-F', // Optimized voice
+          audioEncoding: 'MP3',
+          audioConfig: {
+            speakingRate: 1.15, // Slightly slower to convey calmness
+            pitch: -0.5, // Slightly deeper tone for warmth
+            volumeGainDb: 0.0, // Neutral volume
+          },
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to get speech audio");
+      }
+
+      const data = await response.json();
+      const audioContent = data.audioContent;
+
+      const audioBytes = atob(audioContent);
+      const arrayBuffer = new ArrayBuffer(audioBytes.length);
+      const uint8Array = new Uint8Array(arrayBuffer);
+
+      for (let i = 0; i < audioBytes.length; i++) {
+        uint8Array[i] = audioBytes.charCodeAt(i);
+      }
+
+      const blob = new Blob([uint8Array], { type: "audio/mp3" });
+      const audioUrl = URL.createObjectURL(blob);
+
+      const audio = new Audio(audioUrl);
+      audio.play();
+    } catch (err) {
+      console.error("Error playing text-to-speech audio:", err);
+    }
+  };
+
   const startRecording = () => {
     if (sessionId === null) {
       setError("Session not initialized. Please refresh the page.");
@@ -129,6 +174,8 @@ const SpeechToTextPage: React.FC = () => {
           timestamp: new Date().toISOString(),
         };
         setMessages((prevMessages) => [...prevMessages, gptMessage]);
+
+        await playTextToSpeech(gptMessage.content);
       } catch (err: any) {
         console.error("Failed to send message:", err);
         setError("Failed to send message. Please try again.");
@@ -207,7 +254,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     alignItems: "center",
     height: "100vh",
     backgroundColor: "#f4faff",
-    paddingBottom: "20px", // Add padding at the bottom of the entire container
+    paddingBottom: "20px",
   },
   header: {
     width: "100%",
@@ -254,7 +301,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     display: "flex",
     justifyContent: "center",
     gap: "10px",
-    paddingBottom: "30px", // Add padding to push buttons up from the bottom
+    paddingBottom: "30px",
   },
   startButton: {
     backgroundColor: "#4a90e2",
@@ -284,6 +331,5 @@ const styles: { [key: string]: React.CSSProperties } = {
     fontSize: "14px",
   },
 };
-
 
 export default SpeechToTextPage;
