@@ -4,7 +4,6 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-
 import Image, { StaticImageData } from "next/image";
 
 import mutedBot from "@/assets/therapist_images/mute.png";
@@ -31,12 +30,15 @@ interface MessageResponseDto {
   gptResponse: Message;
 }
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080";
+const BASE_URL =
+  process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080";
 
 const SpeechToTextPage: React.FC = () => {
   const [isRecording, setIsRecording] = useState(false);
   const [isBotTalking, setIsBotTalking] = useState(false);
-  const [currentSequence, setCurrentSequence] = useState<StaticImageData[]>([mutedBot]);
+  const [currentSequence, setCurrentSequence] = useState<StaticImageData[]>([
+    mutedBot,
+  ]);
   const [sequenceIndex, setSequenceIndex] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [sessionId, setSessionId] = useState<number | null>(null);
@@ -50,7 +52,7 @@ const SpeechToTextPage: React.FC = () => {
   const talk4Image: StaticImageData = talkingBot4;
 
   function delay(ms: number) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   useEffect(() => {
@@ -65,7 +67,9 @@ const SpeechToTextPage: React.FC = () => {
 
         if (!response.ok) {
           const errorData = await response.json();
-          throw new Error(errorData.message || `Server error: ${response.statusText}`);
+          throw new Error(
+            errorData.message || `Server error: ${response.statusText}`
+          );
         }
 
         const session: Session = await response.json();
@@ -79,6 +83,13 @@ const SpeechToTextPage: React.FC = () => {
 
     createTherapySession();
   }, []);
+
+  useEffect(() => {
+    if (!isBotTalking && !isRecording && sessionId !== null) {
+      // Start recording automatically when the bot stops talking
+      startRecording();
+    }
+  }, [isBotTalking]);
 
   useEffect(() => {
     if (messagesEndRef.current) {
@@ -135,7 +146,10 @@ const SpeechToTextPage: React.FC = () => {
         // Shuffle the randomImages array
         for (let i = randomImages.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
-          [randomImages[i], randomImages[j]] = [randomImages[j], randomImages[i]];
+          [randomImages[i], randomImages[j]] = [
+            randomImages[j],
+            randomImages[i],
+          ];
         }
         // Select the first two images after shuffling
         const selectedRandomImages = randomImages.slice(0, 2);
@@ -206,17 +220,22 @@ const SpeechToTextPage: React.FC = () => {
       setMessages((prevMessages) => [...prevMessages, userMessage]);
 
       try {
-        const response = await fetch(`${BASE_URL}/api/messages/therapy/${sessionId}`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "text/plain",
-          },
-          body: speechResult,
-        });
+        const response = await fetch(
+          `${BASE_URL}/api/messages/therapy/${sessionId}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "text/plain",
+            },
+            body: speechResult,
+          }
+        );
 
         if (!response.ok) {
           const errorData = await response.json();
-          throw new Error(errorData.message || `Server error: ${response.statusText}`);
+          throw new Error(
+            errorData.message || `Server error: ${response.statusText}`
+          );
         }
 
         const data: MessageResponseDto = await response.json();
@@ -291,11 +310,19 @@ const SpeechToTextPage: React.FC = () => {
       </div>
       <div style={styles.controls}>
         {isRecording ? (
-          <button onClick={stopRecording} style={styles.stopButton} disabled={isBotTalking}>
+          <button
+            onClick={stopRecording}
+            style={styles.stopButton}
+            disabled={isBotTalking}
+          >
             Stop Recording
           </button>
         ) : (
-          <button onClick={startRecording} style={styles.startButton} disabled={isBotTalking}>
+          <button
+            onClick={startRecording}
+            style={styles.startButton}
+            disabled={isBotTalking}
+          >
             Start Recording
           </button>
         )}
