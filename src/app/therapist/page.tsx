@@ -52,10 +52,6 @@ const SpeechToTextPage: React.FC = () => {
   const talk2Image: StaticImageData = talkingBot2;
   const talk4Image: StaticImageData = talkingBot4;
 
-  function delay(ms: number) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-  }
-
   useEffect(() => {
     const createTherapySession = async () => {
       try {
@@ -190,7 +186,8 @@ const SpeechToTextPage: React.FC = () => {
     setError(null);
 
     const SpeechRecognitionAPI =
-      (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+      (window as any).SpeechRecognition ||
+      (window as any).webkitSpeechRecognition;
     if (!SpeechRecognitionAPI) {
       setError("Speech Recognition API is not supported in this browser.");
       return;
@@ -220,6 +217,16 @@ const SpeechToTextPage: React.FC = () => {
       };
       setMessages((prevMessages) => [...prevMessages, userMessage]);
 
+      // **Add a temporary loading message from the Therapist**
+      const tempMessage: Message = {
+        id: Date.now() + 1, // Ensure unique ID
+        session: { id: sessionId! },
+        sender: "Therapist",
+        content: "LOADING", // Placeholder content
+        timestamp: new Date().toISOString(),
+      };
+      setMessages((prevMessages) => [...prevMessages, tempMessage]);
+
       try {
         const response = await fetch(
           `${BASE_URL}/api/messages/therapy/${sessionId}`,
@@ -241,18 +248,28 @@ const SpeechToTextPage: React.FC = () => {
 
         const data: MessageResponseDto = await response.json();
         const gptMessage: Message = {
-          id: Date.now() + 1,
+          id: tempMessage.id, // Reuse the temporary message ID
           session: { id: sessionId! },
           sender: "Therapist",
           content: data.gptResponse.content,
           timestamp: new Date().toISOString(),
         };
-        setMessages((prevMessages) => [...prevMessages, gptMessage]);
+        // **Replace the temporary loading message with the actual GPT response**
+        setMessages((prevMessages) =>
+          prevMessages.map((msg) =>
+            msg.id === tempMessage.id ? gptMessage : msg
+          )
+        );
 
         await playTextToSpeech(gptMessage.content);
       } catch (err: any) {
         console.error("Failed to send message:", err);
         setError("Failed to send message. Please try again.");
+
+        // **Remove the temporary loading message in case of error**
+        setMessages((prevMessages) =>
+          prevMessages.filter((msg) => msg.id !== tempMessage.id)
+        );
       }
     };
 
@@ -281,30 +298,44 @@ const SpeechToTextPage: React.FC = () => {
       <Navbar />
       <div className="flex justify-center items-center gap-10 h-full">
         {/* Bot Image */}
-        
         <Image
           src={currentSequence[sequenceIndex]}
           alt="Bot"
           className="w-2/6 h-auto "
         />
-        
+
         {/* Message Container */}
         {messages.length > 0 && ( // Render only if messages exist
           <div className="flex flex-col flex-1 w-full max-w-[600px] overflow-y-scroll max-h-[350px] shadow-xl border-2 rounded-xl p-4">
             {messages.map((msg) => (
               <div
                 key={msg.id}
-                style={{
-                  ...styles.message,
-                  alignSelf: msg.sender === "You" ? "flex-end" : "flex-start",
-                  backgroundColor: msg.sender === "You" ? "#e0f7ff" : "#fff",
-                }}
+                className={`flex flex-col ${
+                  msg.sender === "You" ? "items-end" : "items-start"
+                } mb-4`}
               >
-                <strong>{msg.sender}:</strong>
-                <p>{msg.content}</p>
-                <span style={styles.timestamp}>
-                  {new Date(msg.timestamp).toLocaleTimeString()}
-                </span>
+                <div
+                  className={`px-4 py-2 rounded-lg shadow ${
+                    msg.sender === "You"
+                      ? "bg-blue-200 text-right"
+                      : "bg-white text-left"
+                  }`}
+                >
+                  <strong>{msg.sender}:</strong>
+                  {/* **Render Loading Animation for Temporary Messages** */}
+                  {msg.sender === "Therapist" && msg.content === "LOADING" ? (
+                    <div className="flex space-x-1 mt-1">
+                      <span className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"></span>
+                      <span className="w-2 h-2 bg-gray-500 rounded-full animate-bounce delay-200"></span>
+                      <span className="w-2 h-2 bg-gray-500 rounded-full animate-bounce delay-400"></span>
+                    </div>
+                  ) : (
+                    <p className="mt-1">{msg.content}</p>
+                  )}
+                  <span className="text-xs text-gray-500 mt-1">
+                    {new Date(msg.timestamp).toLocaleTimeString()}
+                  </span>
+                </div>
               </div>
             ))}
             <div ref={messagesEndRef} />
@@ -313,22 +344,20 @@ const SpeechToTextPage: React.FC = () => {
       </div>
 
       {/* Controls */}
-      <div style={styles.controls}>
+      <div className="mt-4 flex justify-center gap-4 pb-8">
         {isRecording ? (
           <button
             onClick={stopRecording}
-            style={styles.stopButton}
             disabled={isBotTalking}
-            className="rounded-full"
+            className="bg-red-500 text-white px-4 py-2 rounded-full disabled:opacity-50"
           >
             Stop Recording
           </button>
         ) : (
           <button
             onClick={startRecording}
-            style={styles.startButton}
             disabled={isBotTalking}
-            className="rounded-full bg-myblue"
+            className="bg-blue-500 text-white px-4 py-2 rounded-full disabled:opacity-50"
           >
             Start Recording
           </button>
@@ -337,62 +366,14 @@ const SpeechToTextPage: React.FC = () => {
 
       {/* Error */}
       {error && (
-        <div style={styles.errorContainer}>
-          <p>{error}</p>
+        <div className="mt-4 p-4 bg-red-100 text-red-700 rounded-md text-center">
+          {error}
         </div>
       )}
     </div>
-
   );
 };
 
-const styles: { [key: string]: React.CSSProperties } = {
-  message: {
-    maxWidth: "70%",
-    marginBottom: "10px",
-    padding: "10px",
-    borderRadius: "10px",
-    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-    fontSize: "14px",
-  },
-  timestamp: {
-    display: "block",
-    fontSize: "12px",
-    color: "#999",
-    marginTop: "5px",
-    textAlign: "right",
-  },
-  controls: {
-    marginTop: "20px",
-    display: "flex",
-    justifyContent: "center",
-    gap: "10px",
-    paddingBottom: "30px",
-  },
-  startButton: {
-    color: "#ffffff",
-    border: "none",
-    padding: "10px 20px",
-    fontSize: "16px",
-    cursor: "pointer",
-  },
-  stopButton: {
-    backgroundColor: "#e94e77",
-    color: "#ffffff",
-    border: "none",
-    padding: "10px 20px",
-    fontSize: "16px",
-    cursor: "pointer",
-  },
-  errorContainer: {
-    marginTop: "20px",
-    padding: "10px",
-    backgroundColor: "#ffeded",
-    color: "#d9534f",
-    borderRadius: "5px",
-    textAlign: "center",
-    fontSize: "14px",
-  },
-};
+// Removed inline styles and used Tailwind CSS classes instead for consistency
 
 export default SpeechToTextPage;
