@@ -4,9 +4,14 @@ import Navbar from "@/components/navbar/navbar";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
+
 export default function MedicalAssessment() {
   const router = useRouter();
   const [userId, setUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    document.title = "myhealthpal - assessment";
+  }, []);
 
   useEffect(() => {
     const query = new URLSearchParams(window.location.search);

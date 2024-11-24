@@ -24,7 +24,7 @@ export default function Landing(){
                     <Link href="/assessment-user">
                         <div className="btn rounded-full hover:bg-gray-500 bg-myblue text-white text-lg font-medium py-2 w-full border-none">Start Assessment</div>
                     </Link>
-                    <Link href="/assessment-user">
+                    <Link href="/therapist">
                         <div className="btn rounded-full hover:bg-gray-500 hover:text-white bg-mylightblue text-myblue text-lg font-medium py-2 w-full border-none">Start Pal-Chat</div>
                     </Link>
                 </div>

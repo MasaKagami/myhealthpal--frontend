@@ -1,5 +1,10 @@
 import Navbar from "@/components/navbar/navbar";
+import { Metadata } from "next";
 import Image from "next/image";
+
+export const metadata: Metadata = {
+    title: "myhealthpal - about us",
+  };
 
 export default function AboutUs(){
     return(
