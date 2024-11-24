@@ -281,10 +281,11 @@ const SpeechToTextPage: React.FC = () => {
       <Navbar />
       <div className="flex justify-center items-center gap-10 h-full">
         {/* Bot Image */}
+        
         <Image
           src={currentSequence[sequenceIndex]}
           alt="Bot"
-          className="w-2/6 h-auto"
+          className="w-2/6 h-auto "
         />
         
         {/* Message Container */}
