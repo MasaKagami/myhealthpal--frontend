@@ -1,31 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
-import Image from "next/image";
 
 interface Message {
   sender: "user" | "ai";
   text: string;
 }
 
-export default function DoctorChat() {
+export default function DoctorChat({ sessionId }: { sessionId: number }) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [error, setError] = useState<string | null>(null);
-
-  // Simulated AI response
-  const getAIResponse = async (userMessage: string) => {
-    // Replace this with your AI API logic
-    const response = await fetch("/api/ai-doctor", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: userMessage }),
-    });
-
-    const data = await response.json();
-    return data.reply || "I'm sorry, I didn't understand that. Can you try again?";
-  };
 
   const handleSendMessage = async () => {
     if (!input.trim()) return;
@@ -35,10 +20,23 @@ export default function DoctorChat() {
     setInput("");
 
     try {
-      const aiReply = await getAIResponse(userMessage);
-      setMessages((prev) => [...prev, { sender: "ai", text: aiReply }]);
+      const response = await fetch(`/api/messages/${sessionId}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sender: "user", content: userMessage }),
+      });
+
+      if (!response.ok) throw new Error("Failed to send message");
+
+      const data = await response.json();
+
+      // Add AI response to the messages list
+      setMessages((prev) => [
+        ...prev,
+        { sender: "ai", text: data.gptResponse.content },
+      ]);
     } catch (err) {
-      setError("Failed to get a response from the AI. Please try again.");
+      setError("Failed to send message. Please try again.");
     }
   };
 
@@ -76,7 +74,7 @@ export default function DoctorChat() {
           placeholder="Describe your symptoms..."
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          className="input input-bordered flex-1"
+          className="input input-bordered flex-1 text-white"
         />
         <button onClick={handleSendMessage} className="btn btn-primary">
           Send
