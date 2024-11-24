@@ -20,19 +20,19 @@ export default function Hotlines() {
     ];
 
     return (
-        <>
-            <h1 className="text-3xl font-bold mb-4">Important Hotlines</h1>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+        <div className="flex flex-col gap-5">
+            <h1 className="text-3xl font-semibold text-myblue">Important Hotlines</h1>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {hotlines.map((hotline, index) => (
-                    <div key={index} className="card bg-base-100 shadow-xl">
+                    <div key={index} className="card bg-mylightblue shadow-xl">
                         <div className="card-body">
-                            <h2 className="card-title">{hotline.name}</h2>
-                            <p>Number: {hotline.number}</p>
-                            <p>{hotline.description}</p>
+                            <h2 className="card-title text-myblue text-base">{hotline.name}</h2>
+                            <p className="text-sm">Number: {hotline.number}</p>
+                            <p className="text-sm">{hotline.description}</p>
                         </div>
                     </div>
                 ))}
             </div>
-        </>
+        </div>
     );
 }

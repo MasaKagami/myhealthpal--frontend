@@ -93,10 +93,10 @@ export default function LocalHealthcareServices() {
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-4xl font-bold mb-8">Local Healthcare Services Near You</h1>
-      <div className="mb-4 flex flex-col items-center">
-        <label className="block text-lg font-medium mb-2">Search Radius: {radius} km</label>
+    <div className="flex flex-col gap-5 my-5">
+      <h1 className="text-3xl font-semibold text-myblue">Local Healthcare Services Near You</h1>
+      <div className=" flex flex-col items-center">
+        <label className="block text-base font-medium">Search Radius: {radius} km</label>
         <input
           type="range"
           min="1"
@@ -108,45 +108,51 @@ export default function LocalHealthcareServices() {
         />
       </div>
       {error ? (
-        <p className="text-red-500">{error}</p>
+      <p className="text-red-500">{error}</p>
       ) : location ? (
-        <div className="overflow-x-auto">
-          <ul className="flex space-x-4">
-            {nearbyHealthcarePlaces.map((place, index) => (
-              <li key={index} className="flex-none w-80">
-                <div className="card bg-base-100 shadow-xl">
+      <div className="overflow-x-auto">
+        <ul className="flex space-x-4">
+          {nearbyHealthcarePlaces.map((place, index) => (
+            <li key={index} className="flex-none w-72">
+              <div className="card bg-mylightblue shadow-xl h-full">
+                {/* Card Image */}
+                <div className="w-full h-40 relative">
                   {place.imageUrl ? (
-                    <div className="w-full h-40 relative">
-                      <Image
-                        src={imageMap[place.id]}
-                        alt={place.name}
-                        fill
-                        className="rounded-t-lg object-cover"
-                      />
-                    </div>
+                    <Image
+                      src={imageMap[place.id]}
+                      alt={place.name}
+                      fill
+                      className="rounded-t-lg object-cover"
+                    />
                   ) : (
                     <div className="w-full h-40 bg-gray-200 rounded-t-lg flex items-center justify-center">
                       <span className="text-gray-500 text-lg">No Image</span>
                     </div>
                   )}
-                  <div className="card-body">
-                    <h2 className="card-title">{place.name}</h2>
-                    <p>Address: {place.address}</p>
-                    <div className="card-actions justify-end">
-                      {place.link ? (
-                        <Link href={place.link} target="_blank" rel="noopener noreferrer">
-                          <div className="btn btn-primary">View On Map</div>
-                        </Link>
-                      ) : (
-                        <div className="btn btn-disabled">Out of Range</div>
-                      )}
-                    </div>
+                </div>
+
+                {/* Card Body */}
+                <div className="card-body p-4 flex flex-col justify-between h-[calc(100%-10rem)]">
+                  <h2 className="card-title text-base text-myblue">{place.name}</h2>
+                  <p className="text-sm">Address: {place.address}</p>
+                  <div className="card-actions justify-end">
+                    {place.link ? (
+                      <Link href={place.link} target="_blank" rel="noopener noreferrer">
+                        <div className="btn bg-myblue text-xs hover:bg-gray-500 text-white border-none rounded-full px-4">
+                          View On Map
+                        </div>
+                      </Link>
+                    ) : (
+                      <div className="btn btn-disabled px-4 py-1">Out of Range</div>
+                    )}
                   </div>
                 </div>
-              </li>
-            ))}
-          </ul>
-        </div>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+
       ) : (
         <div className="flex justify-center items-center h-64">
           <span className="loading loading-spinner loading-lg"></span>

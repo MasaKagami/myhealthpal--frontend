@@ -1,6 +1,6 @@
 export default function Footer() {
     return (
-        <footer className="footer w-full bg-neutral text-neutral-content py-10">
+        <footer className="footer w-full bg-[#1E1E2F] text-[#E8EAF6] py-20">
             <div className="w-full max-w-[80%] m-auto grid grid-cols-2 gap-4">
                 <nav className="">
                     <span className="footer-title block mb-2">Services</span>
