@@ -1,12 +1,18 @@
 "use client"
 
 import Navbar from "@/components/navbar/navbar";
-import React from "react";
+import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
+
 
 export default function MedicalAssement(){
     const router = useRouter();
 
+    useEffect(() => {
+        document.title = "myhealthpal - assessment";
+    }, []); // Runs once when the component mounts
+
+    
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const form = e.target as HTMLFormElement;
