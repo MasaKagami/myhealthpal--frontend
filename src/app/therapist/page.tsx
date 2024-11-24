@@ -5,6 +5,13 @@
 
 import React, { useState, useRef, useEffect } from "react";
 
+import Image, { StaticImageData } from "next/image";
+
+import mutedBot from "@/assets/therapist_images/mute.png";
+import talkingBot1 from "@/assets/therapist_images/talk1.png";
+import talkingBot2 from "@/assets/therapist_images/talk2.png";
+import talkingBot4 from "@/assets/therapist_images/talk4.png";
+
 interface Session {
   id: number;
 }
@@ -28,11 +35,23 @@ const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080"
 
 const SpeechToTextPage: React.FC = () => {
   const [isRecording, setIsRecording] = useState(false);
+  const [isBotTalking, setIsBotTalking] = useState(false);
+  const [currentSequence, setCurrentSequence] = useState<StaticImageData[]>([mutedBot]);
+  const [sequenceIndex, setSequenceIndex] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [sessionId, setSessionId] = useState<number | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+
+  const muteImage: StaticImageData = mutedBot;
+  const talk1Image: StaticImageData = talkingBot1;
+  const talk2Image: StaticImageData = talkingBot2;
+  const talk4Image: StaticImageData = talkingBot4;
+
+  function delay(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
 
   useEffect(() => {
     const createTherapySession = async () => {
@@ -69,6 +88,8 @@ const SpeechToTextPage: React.FC = () => {
 
   const playTextToSpeech = async (text: string) => {
     try {
+      setIsBotTalking(true);
+
       const response = await fetch("/api/textToSpeech", {
         method: "POST",
         headers: {
@@ -76,9 +97,9 @@ const SpeechToTextPage: React.FC = () => {
         },
         body: JSON.stringify({
           text,
-          languageCode: 'en-US',
-          voiceName: 'en-US-Neural2-F', // Optimized voice
-          audioEncoding: 'MP3',
+          languageCode: "en-US",
+          voiceName: "en-US-Neural2-F", // Optimized voice
+          audioEncoding: "MP3",
           audioConfig: {
             speakingRate: 1.15, // Slightly slower to convey calmness
             pitch: -0.5, // Slightly deeper tone for warmth
@@ -106,9 +127,42 @@ const SpeechToTextPage: React.FC = () => {
       const audioUrl = URL.createObjectURL(blob);
 
       const audio = new Audio(audioUrl);
+
+      let imageInterval: NodeJS.Timeout;
+
+      audio.onplay = () => {
+        const randomImages = [talk1Image, talk2Image];
+        // Shuffle the randomImages array
+        for (let i = randomImages.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [randomImages[i], randomImages[j]] = [randomImages[j], randomImages[i]];
+        }
+        // Select the first two images after shuffling
+        const selectedRandomImages = randomImages.slice(0, 2);
+        const sequence = [muteImage, ...selectedRandomImages, talk4Image];
+        setCurrentSequence(sequence);
+        setSequenceIndex(0);
+
+        imageInterval = setInterval(() => {
+          setSequenceIndex((prevIndex) => {
+            const nextIndex = (prevIndex + 1) % sequence.length;
+            return nextIndex;
+          });
+        }, 175); // Change image every 175ms
+      };
+
+      audio.onended = () => {
+        console.log("Audio playback finished.");
+        setIsBotTalking(false);
+        clearInterval(imageInterval);
+        setCurrentSequence([muteImage]);
+        setSequenceIndex(0);
+      };
+
       audio.play();
     } catch (err) {
       console.error("Error playing text-to-speech audio:", err);
+      setIsBotTalking(false);
     }
   };
 
@@ -144,7 +198,7 @@ const SpeechToTextPage: React.FC = () => {
 
       const userMessage: Message = {
         id: Date.now(),
-        session: { id: sessionId },
+        session: { id: sessionId! },
         sender: "You",
         content: speechResult,
         timestamp: new Date().toISOString(),
@@ -168,7 +222,7 @@ const SpeechToTextPage: React.FC = () => {
         const data: MessageResponseDto = await response.json();
         const gptMessage: Message = {
           id: Date.now() + 1,
-          session: { id: sessionId },
+          session: { id: sessionId! },
           sender: "Therapist",
           content: data.gptResponse.content,
           timestamp: new Date().toISOString(),
@@ -207,6 +261,15 @@ const SpeechToTextPage: React.FC = () => {
       <header style={styles.header}>
         <h1 style={styles.title}>myhealthpal</h1>
       </header>
+      <div style={styles.botImageContainer}>
+        <Image
+          src={currentSequence[sequenceIndex]}
+          alt="Bot"
+          width={200}
+          height={200}
+          style={styles.botImage}
+        />
+      </div>
       <div style={styles.chatContainer}>
         {messages.map((msg) => (
           <div
@@ -228,11 +291,11 @@ const SpeechToTextPage: React.FC = () => {
       </div>
       <div style={styles.controls}>
         {isRecording ? (
-          <button onClick={stopRecording} style={styles.stopButton}>
+          <button onClick={stopRecording} style={styles.stopButton} disabled={isBotTalking}>
             Stop Recording
           </button>
         ) : (
-          <button onClick={startRecording} style={styles.startButton}>
+          <button onClick={startRecording} style={styles.startButton} disabled={isBotTalking}>
             Start Recording
           </button>
         )}
@@ -267,6 +330,15 @@ const styles: { [key: string]: React.CSSProperties } = {
     fontSize: "1.8rem",
     fontWeight: "bold",
     margin: 0,
+  },
+  botImageContainer: {
+    marginTop: "20px",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  botImage: {
+    // Optional additional styling
   },
   chatContainer: {
     flex: 1,
