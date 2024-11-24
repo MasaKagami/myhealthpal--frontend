@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import CameraFeed from "@/components/CameraFeed"; // Ensure correct import path
 
 interface Message {
   id: number;
@@ -21,6 +22,7 @@ export default function DoctorChat({ sessionId }: { sessionId: number }) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [showCamera, setShowCamera] = useState(false); // Camera state
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -84,6 +86,42 @@ export default function DoctorChat({ sessionId }: { sessionId: number }) {
     }
   };
 
+  const handleVisionResult = async (visionResult: string) => {
+    if (!sessionId) {
+      console.error("Session ID is not set.");
+      return;
+    }
+
+    try {
+      const response = await fetch(`${BASE_URL}/api/messages/${sessionId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          content: `The medicine I want help understanding is: ${visionResult}`,
+          sender: "user",
+          session: { id: sessionId },
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Message sent successfully:", data);
+        // Refresh the messages after a successful message transmission
+        // Instead of reloading the page, fetch the messages again
+        const refreshedMessages = await fetch(`${BASE_URL}/api/messages/session/${sessionId}`).then(res => res.json());
+        setMessages(refreshedMessages);
+      } else {
+        console.error("Failed to send message:", await response.text());
+      }
+    } catch (error) {
+      console.error("Error sending message:", error);
+    } finally {
+      setShowCamera(false);
+    }
+  };
+
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && input.trim()) {
       e.preventDefault();
@@ -92,11 +130,11 @@ export default function DoctorChat({ sessionId }: { sessionId: number }) {
   };
 
   return (
-    <div className="flex flex-col w-full max-w-3xl">
+    <div className="flex flex-col w-full max-w-3xl relative">
       <div className="h-96 overflow-y-auto p-4 border rounded-lg bg-transparent border-none">
         {messages.length <= 2 ? (
           <p className="text-center flex items-center justify-center h-full text-gray-500">
-            {/* Start by typing your symptoms below. */}
+            {/* You can add a starter message here if needed */}
           </p>
         ) : (
           <div className="space-y-4">
@@ -135,6 +173,15 @@ export default function DoctorChat({ sessionId }: { sessionId: number }) {
           onKeyPress={handleKeyPress}
           className="input flex-1  bg-transparent placeholder-grey-400 border-none focus:text-gray-800 focus:bg-transparent focus:outline-none"
         />
+        {/* Camera Button */}
+        <button
+          onClick={() => setShowCamera(true)}
+          className="btn bg-transparent hover:bg-gray-300 text-myblue p-2 rounded-full focus:outline-none"
+          title="Open Camera"
+        >
+          📷
+        </button>
+        {/* Send Button */}
         <button 
           onClick={handleSendMessage} 
           className="btn btn-circle bg-myblue hover:bg-gray-500 text-white border-none"
@@ -143,6 +190,20 @@ export default function DoctorChat({ sessionId }: { sessionId: number }) {
           <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M440-160v-487L216-423l-56-57 320-320 320 320-56 57-224-224v487h-80Z"/></svg>
         </button>
       </div>
+
+      {showCamera && (
+        <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="relative bg-white p-4 rounded-lg">
+            <button
+              className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 focus:outline-none"
+              onClick={() => setShowCamera(false)}
+            >
+              ✕
+            </button>
+            <CameraFeed onVisionResult={handleVisionResult} />
+          </div>
+        </div>
+      )}
 
       {error && <p className="text-red-500 text-center mt-4">{error}</p>}
     </div>
