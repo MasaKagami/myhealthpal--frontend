@@ -16,22 +16,23 @@ export default function Landing(){
                 <h1 className="font-semibold text-myblue text-4xl">myhealthpal</h1>
             </div>
 
-            {/* <h1 className="text-7xl font-bold">Welcome!</h1> */}
-            
             <div className="flex justify-center items-center flex-col gap-6">
                 <p className="font-light text-xs max-w-[60%]">Your trusted virtual health assistant, designed to guide you through personalized symptom assessments, mental health support, and local healthcare services. Whether you&apos;re seeking advice for a healthier lifestyle or immediate support, we&apos;re here to empower you every step of the way.</p>
                 <div className="flex flex-col gap-2 w-[40%]">
-                    <Link href="/assessment-user">
-                        <div className="btn rounded-full hover:bg-gray-500 bg-myblue text-white text-lg font-medium py-2 w-full border-none">Start Assessment</div>
+                    <Link href="/assessment-user" 
+                        className="btn rounded-full hover:bg-gray-500 bg-myblue text-white text-lg font-medium py-2 w-full border-none"
+                    >
+                        Start Assessment
                     </Link>
-                    <Link href="/therapist">
-                        <div className="btn rounded-full hover:bg-gray-500 hover:text-white bg-mylightblue text-myblue text-lg font-medium py-2 w-full border-none">Start Pal-Chat</div>
+                    <Link 
+                        href="/therapist"
+                        className="btn rounded-full hover:bg-gray-500 hover:text-white bg-mylightblue text-myblue text-lg font-medium py-2 w-full border-none"
+                    >
+                        Start Pal-Chat
                     </Link>
+
                 </div>
             </div>
-
-            
-
         </div>
     )
 }
