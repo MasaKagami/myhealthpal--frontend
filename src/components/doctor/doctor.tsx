@@ -84,6 +84,13 @@ export default function DoctorChat({ sessionId }: { sessionId: number }) {
     }
   };
 
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && input.trim()) {
+      e.preventDefault();
+      handleSendMessage();
+    }
+  };
+
   return (
     <div className="flex flex-col w-full max-w-3xl">
       <div className="h-96 overflow-y-auto p-4 border rounded-lg bg-[#ECF1FF]">
@@ -125,7 +132,8 @@ export default function DoctorChat({ sessionId }: { sessionId: number }) {
           placeholder="Describe your symptoms..."
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          className="input input-bordered input-ghost flex-1 text-white focus:bg-[#f5f5f5]  placeholder-grey-400"
+          onKeyPress={handleKeyPress}
+          className="input input-bordered flex-1 text-white placeholder-grey-400 bg-gray-800"
         />
         <button 
           onClick={handleSendMessage} 
