@@ -1,9 +1,30 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
+import Image, { StaticImageData } from "next/image";
 import { useEffect, useState } from "react";
-// import Loading from "@mui/material/CircularProgress";
+
+import image1 from "@/assets/healthcare_images/hospital_1.jpg";
+import image2 from "@/assets/healthcare_images/hospital_2.jpg";
+import image3 from "@/assets/healthcare_images/hospital_3.jpg";
+import image4 from "@/assets/healthcare_images/hospital_4.jpg";
+import image5 from "@/assets/healthcare_images/hospital_5.jpg";
+import image6 from "@/assets/healthcare_images/hospital_6.jpg";
+import image7 from "@/assets/healthcare_images/hospital_7.jpg";
+import image8 from "@/assets/healthcare_images/hospital_8.jpg";
+import image10 from "@/assets/healthcare_images/hospital_10.jpg";
+
+const imageMap: { [key: number]: StaticImageData } = {
+  1: image1,
+  2: image2,
+  3: image3,
+  4: image4,
+  5: image5,
+  6: image6,
+  7: image7,
+  8: image8,
+  10: image10,
+};
 
 interface Location {
   latitude: number;
@@ -11,6 +32,7 @@ interface Location {
 }
 
 interface HealthCarePlace {
+  id: number;
   name: string;
   address: string;
   latitude: number;
@@ -23,7 +45,7 @@ export default function LocalHealthcareServices() {
   const [location, setLocation] = useState<Location | null>(null);
   const [nearbyHealthcarePlaces, setNearbyHealthcarePlaces] = useState<HealthCarePlace[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [radius, setRadius] = useState<number>(10); // Default radius in kilometers
+  const [radius, setRadius] = useState<number>(10); 
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -96,7 +118,7 @@ export default function LocalHealthcareServices() {
                   {place.imageUrl ? (
                     <div className="w-full h-40 relative">
                       <Image
-                        src={place.imageUrl}
+                        src={imageMap[place.id]}
                         alt={place.name}
                         fill
                         className="rounded-t-lg object-cover"
@@ -127,7 +149,7 @@ export default function LocalHealthcareServices() {
         </div>
       ) : (
         <div className="flex justify-center items-center h-64">
-          {/* <Loading /> */}
+          <span className="loading loading-spinner loading-lg"></span>
         </div>
       )}
     </div>
