@@ -11,7 +11,7 @@ export default function Home() {
 
   return (
     <>
-      <div className="flex flex-col h-screen w-full max-w-[80%] m-auto">
+      <div className="flex flex-col h-screen w-full max-w-[90%] md:max-w-[80%] m-auto">
          <Navbar />
          <Landing />
        </div>

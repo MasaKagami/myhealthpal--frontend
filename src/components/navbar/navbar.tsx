@@ -41,13 +41,13 @@ export default function Navbar() {
             </div>
           </Link>          
 
-          <Link href="/about-us">
+          {/* <Link href="/about-us">
             <div className="btn btn-circle btn-ghost border-white">
                 <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M686-132 444-376q-20 8-40.5 12t-43.5 4q-100 0-170-70t-70-170q0-36 10-68.5t28-61.5l146 146 72-72-146-146q29-18 61.5-28t68.5-10q100 0 170 70t70 170q0 23-4 43.5T584-516l244 242q12 12 12 29t-12 29l-84 84q-12 12-29 12t-29-12Zm29-85 27-27-256-256q18-20 26-46.5t8-53.5q0-60-38.5-104.5T386-758l74 74q12 12 12 28t-12 28L332-500q-12 12-28 12t-28-12l-74-74q9 57 53.5 95.5T360-440q26 0 52-8t47-25l256 256ZM472-488Z"/></svg>
             </div>
-          </Link>
+          </Link> */}
 
-          <div
+          {/* <div
             onClick={toggleMute}
             className=" bg-myblue btn btn-circle btn-ghost border-white"
           >
@@ -56,13 +56,13 @@ export default function Navbar() {
             ) : (
               <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M560-131v-82q90-26 145-100t55-168q0-94-55-168T560-749v-82q124 28 202 125.5T840-481q0 127-78 224.5T560-131ZM120-360v-240h160l200-200v640L280-360H120Zm440 40v-322q47 22 73.5 66t26.5 96q0 51-26.5 94.5T560-320ZM400-606l-86 86H200v80h114l86 86v-252ZM300-480Z"/></svg>
             )}
-          </div>
+          </div> */}
 
           <Link 
             href="/local-healthcare"
             className="btn rounded-full btn-ghost flex justify-center items-center gap-3 text-white border-white bg-myblue"
           >
-            Local Healthcare Services
+            <p className="hidden md:block">Local Healthcare Services</p>
             <svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 -960 960 960"  height="24px" width="24px" fill="#e8eaed"><path d="M160-80q-33 0-56.5-23.5T80-160v-480q0-33 23.5-56.5T160-720h160v-80q0-33 23.5-56.5T400-880h160q33 0 56.5 23.5T640-800v80h160q33 0 56.5 23.5T880-640v480q0 33-23.5 56.5T800-80H160Zm0-80h640v-480H160v480Zm240-560h160v-80H400v80ZM160-160v-480 480Zm280-200v120h80v-120h120v-80H520v-120h-80v120H320v80h120Z"/></svg>
           </Link>
         </div>

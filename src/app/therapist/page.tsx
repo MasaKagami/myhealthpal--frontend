@@ -278,34 +278,40 @@ const SpeechToTextPage: React.FC = () => {
 
   return (
     <div className="flex flex-col h-screen w-full max-w-[80%] m-auto">
-      <Navbar/>
+      <Navbar />
       <div className="flex justify-center items-center gap-10 h-full">
+        {/* Bot Image */}
         <Image
           src={currentSequence[sequenceIndex]}
           alt="Bot"
           className="w-2/6 h-auto"
         />
-        <div className="flex flex-col flex-1 w-full max-w-[600px] overflow-y-scroll max-h-[350px] shadow-xl border-2 rounded-xl p-4">
-          {messages.map((msg) => (
-            <div
-              key={msg.id}
-              style={{
-                ...styles.message,
-                alignSelf: msg.sender === "You" ? "flex-end" : "flex-start",
-                backgroundColor: msg.sender === "You" ? "#e0f7ff" : "#fff",
-              }}
-            >
-              <strong>{msg.sender}:</strong>
-              <p>{msg.content}</p>
-              <span style={styles.timestamp}>
-                {new Date(msg.timestamp).toLocaleTimeString()}
-              </span>
-            </div>
-          ))}
-          <div ref={messagesEndRef} />
-        </div>
+        
+        {/* Message Container */}
+        {messages.length > 0 && ( // Render only if messages exist
+          <div className="flex flex-col flex-1 w-full max-w-[600px] overflow-y-scroll max-h-[350px] shadow-xl border-2 rounded-xl p-4">
+            {messages.map((msg) => (
+              <div
+                key={msg.id}
+                style={{
+                  ...styles.message,
+                  alignSelf: msg.sender === "You" ? "flex-end" : "flex-start",
+                  backgroundColor: msg.sender === "You" ? "#e0f7ff" : "#fff",
+                }}
+              >
+                <strong>{msg.sender}:</strong>
+                <p>{msg.content}</p>
+                <span style={styles.timestamp}>
+                  {new Date(msg.timestamp).toLocaleTimeString()}
+                </span>
+              </div>
+            ))}
+            <div ref={messagesEndRef} />
+          </div>
+        )}
       </div>
-      
+
+      {/* Controls */}
       <div style={styles.controls}>
         {isRecording ? (
           <button
@@ -327,12 +333,15 @@ const SpeechToTextPage: React.FC = () => {
           </button>
         )}
       </div>
+
+      {/* Error */}
       {error && (
         <div style={styles.errorContainer}>
           <p>{error}</p>
         </div>
       )}
     </div>
+
   );
 };
 

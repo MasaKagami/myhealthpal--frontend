@@ -22,13 +22,13 @@ export default function Landing(){
                     <Link href="/assessment-user" 
                         className="btn rounded-full hover:bg-gray-500 bg-myblue text-white text-lg font-medium py-2 w-full border-none"
                     >
-                        Start Assessment
+                        <span className="hidden sm:block">Start</span> Assessment
                     </Link>
                     <Link 
                         href="/therapist"
                         className="btn rounded-full hover:bg-gray-500 hover:text-white bg-mylightblue text-myblue text-lg font-medium py-2 w-full border-none"
                     >
-                        Start Pal-Chat
+                        <span className="hidden sm:block">Start</span> Pal-Chat
                     </Link>
 
                 </div>
