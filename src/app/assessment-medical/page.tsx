@@ -1,11 +1,23 @@
 "use client";
 
 import Navbar from "@/components/navbar/navbar";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 export default function MedicalAssessment() {
   const router = useRouter();
+  const [userId, setUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const query = new URLSearchParams(window.location.search);
+    const userId = query.get("userId");
+    if (userId) {
+      setUserId(userId);
+    } else {
+      router.push("/assessment-user");
+    }
+  }, [router]);
+
   const [formData, setFormData] = useState({
     condition: "",
     activity: "",
@@ -39,7 +51,6 @@ export default function MedicalAssessment() {
       `;
 
       try {
-        const userId = new URLSearchParams(window.location.search).get("userId");
         if (!userId) throw new Error("User ID not found");
 
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/users/${userId}/medical-history`, {
@@ -58,18 +69,18 @@ export default function MedicalAssessment() {
         console.log("Medical history updated:", data);
 
         const sessionResponse = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/sessions?userId=${userId}`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                completed: true,
-                sessionType: "DOCTOR",
-            }),
-            });
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            completed: false,
+            sessionType: "DOCTOR",
+          }),
+        });
 
         if (!sessionResponse.ok) {
-            throw new Error("Failed to create session");
+          throw new Error("Failed to create session");
         }
 
         const sessionData = await sessionResponse.json();
