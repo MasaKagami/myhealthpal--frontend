@@ -19,10 +19,7 @@ export default function Navbar() {
   return (
     <>
       <audio ref={audioRef} autoPlay loop>
-        <source src="../audio/zen.mp3" 
-        
-        
-        type="audio/mp3" />
+        <source src="../audio/zen.mp3" type="audio/mp3" />
         Your browser does not support the audio element.
       </audio>
       <div className="z-40 sticky top-4 flex py-4 w-full justify-between items-center bg-myblue rounded-full mt-4 px-8">

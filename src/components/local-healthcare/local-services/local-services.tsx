@@ -45,7 +45,7 @@ export default function LocalHealthcareServices() {
   const [location, setLocation] = useState<Location | null>(null);
   const [nearbyHealthcarePlaces, setNearbyHealthcarePlaces] = useState<HealthCarePlace[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [radius, setRadius] = useState<number>(10); 
+  const [radius, setRadius] = useState<number>(3); 
 
   useEffect(() => {
     if (navigator.geolocation) {

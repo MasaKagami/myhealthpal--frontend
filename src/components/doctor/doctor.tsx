@@ -93,10 +93,10 @@ export default function DoctorChat({ sessionId }: { sessionId: number }) {
 
   return (
     <div className="flex flex-col w-full max-w-3xl">
-      <div className="h-96 overflow-y-auto p-4 border rounded-lg bg-[#ECF1FF]">
+      <div className="h-96 overflow-y-auto p-4 border rounded-lg bg-transparent border-none">
         {messages.length <= 2 ? (
-          <p className="text-center text-gray-500">
-            Start by typing your symptoms below.
+          <p className="text-center flex items-center justify-center h-full text-gray-500">
+            {/* Start by typing your symptoms below. */}
           </p>
         ) : (
           <div className="space-y-4">
@@ -126,21 +126,21 @@ export default function DoctorChat({ sessionId }: { sessionId: number }) {
         )}
       </div>
 
-      <div className="mt-4 flex items-center space-x-2">
+      <div className="mt-4 flex items-center space-x-2 rounded-full border-4 border-myblue p-2">
         <input
           type="text"
           placeholder="Describe your symptoms..."
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyPress={handleKeyPress}
-          className="input input-bordered input-ghost flex-1  placeholder-grey-400 focus:text-gray-800 focus:bg-[#f5f5f5]"
+          className="input flex-1  bg-transparent placeholder-grey-400 border-none focus:text-gray-800 focus:bg-transparent focus:outline-none"
         />
         <button 
           onClick={handleSendMessage} 
-          className="btn bg-myblue hover:bg-gray-500 text-white border-none"
+          className="btn btn-circle bg-myblue hover:bg-gray-500 text-white border-none"
           disabled={!input.trim()}
           >
-          Send
+          <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M440-160v-487L216-423l-56-57 320-320 320 320-56 57-224-224v487h-80Z"/></svg>
         </button>
       </div>
 
