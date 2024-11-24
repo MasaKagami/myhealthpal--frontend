@@ -1,23 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // src/components/SpeechToTextPage.tsx
 
-"use client"; // Ensure this directive is at the top if you're using Next.js or similar frameworks
+"use client";
 
 import React, { useState, useRef, useEffect } from "react";
 
-// TypeScript Interfaces
 interface Session {
   id: number;
-  // Add other session fields if needed
 }
 
 interface Message {
   id: number;
   session: {
     id: number;
-    // Add other session fields if needed
   };
-  sender: string; // 'user' or 'ChatGPT'
+  sender: string; // 'user' or 'Therapist'
   content: string;
   timestamp: string;
 }
@@ -27,17 +24,16 @@ interface MessageResponseDto {
   gptResponse: Message;
 }
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080"; // Replace with your actual backend base URL
+const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080";
 
 const SpeechToTextPage: React.FC = () => {
   const [isRecording, setIsRecording] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [sessionId, setSessionId] = useState<number | null>(null);
-  const [messages, setMessages] = useState<Message[]>([]); // State to hold all messages
+  const [messages, setMessages] = useState<Message[]>([]);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
-  const messagesEndRef = useRef<HTMLDivElement | null>(null); // For auto-scrolling
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
-  // Create a therapy session on component mount
   useEffect(() => {
     const createTherapySession = async () => {
       try {
@@ -49,7 +45,6 @@ const SpeechToTextPage: React.FC = () => {
         });
 
         if (!response.ok) {
-          // Attempt to parse error message from response
           const errorData = await response.json();
           throw new Error(errorData.message || `Server error: ${response.statusText}`);
         }
@@ -64,9 +59,8 @@ const SpeechToTextPage: React.FC = () => {
     };
 
     createTherapySession();
-  }, [BASE_URL]);
+  }, []);
 
-  // Auto-scroll to the latest message
   useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
@@ -90,9 +84,9 @@ const SpeechToTextPage: React.FC = () => {
 
     const recognition = new SpeechRecognitionAPI();
     recognitionRef.current = recognition;
-    recognition.lang = "en-US"; // Set language
-    recognition.interimResults = false; // Get final results only
-    recognition.maxAlternatives = 1; // Number of alternative transcriptions
+    recognition.lang = "en-US";
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
 
     recognition.onstart = () => {
       console.log("Speech recognition started.");
@@ -103,11 +97,10 @@ const SpeechToTextPage: React.FC = () => {
       const speechResult = event.results[0][0].transcript;
       console.log("Transcribed text:", speechResult);
 
-      // Append user's message to the messages list
       const userMessage: Message = {
-        id: Date.now(), // Temporary ID; ideally, use backend-generated ID
+        id: Date.now(),
         session: { id: sessionId },
-        sender: "user",
+        sender: "You",
         content: speechResult,
         timestamp: new Date().toISOString(),
       };
@@ -123,17 +116,13 @@ const SpeechToTextPage: React.FC = () => {
         });
 
         if (!response.ok) {
-          // Attempt to parse error message from response
           const errorData = await response.json();
           throw new Error(errorData.message || `Server error: ${response.statusText}`);
         }
 
         const data: MessageResponseDto = await response.json();
-        console.log("GPT Response:", data.gptResponse.content);
-
-        // Append GPT's response to the messages list
         const gptMessage: Message = {
-          id: Date.now() + 1, // Temporary ID; ideally, use backend-generated ID
+          id: Date.now() + 1,
           session: { id: sessionId },
           sender: "Therapist",
           content: data.gptResponse.content,
@@ -168,39 +157,20 @@ const SpeechToTextPage: React.FC = () => {
 
   return (
     <div style={styles.container}>
-      <h1>Speech-to-Text Therapy Chat</h1>
-      {sessionId ? (
-        <div style={styles.buttonContainer}>
-          {isRecording ? (
-            <button
-              onClick={stopRecording}
-              style={{ ...styles.button, ...styles.stopButton }}
-            >
-              Stop Recording
-            </button>
-          ) : (
-            <button
-              onClick={startRecording}
-              style={{ ...styles.button, ...styles.startButton }}
-            >
-              Start Recording
-            </button>
-          )}
-        </div>
-      ) : (
-        <p>Initializing session...</p>
-      )}
+      <header style={styles.header}>
+        <h1 style={styles.title}>myhealthpal</h1>
+      </header>
       <div style={styles.chatContainer}>
         {messages.map((msg) => (
           <div
             key={msg.id}
             style={{
               ...styles.message,
-              alignSelf: msg.sender === "user" ? "flex-end" : "flex-start",
-              backgroundColor: msg.sender === "user" ? "#DCF8C6" : "#FFF",
+              alignSelf: msg.sender === "You" ? "flex-end" : "flex-start",
+              backgroundColor: msg.sender === "You" ? "#e0f7ff" : "#fff",
             }}
           >
-            <strong>{msg.sender === "user" ? "You" : "Therapist"}:</strong>
+            <strong>{msg.sender}:</strong>
             <p>{msg.content}</p>
             <span style={styles.timestamp}>
               {new Date(msg.timestamp).toLocaleTimeString()}
@@ -209,9 +179,19 @@ const SpeechToTextPage: React.FC = () => {
         ))}
         <div ref={messagesEndRef} />
       </div>
+      <div style={styles.controls}>
+        {isRecording ? (
+          <button onClick={stopRecording} style={styles.stopButton}>
+            Stop Recording
+          </button>
+        ) : (
+          <button onClick={startRecording} style={styles.startButton}>
+            Start Recording
+          </button>
+        )}
+      </div>
       {error && (
         <div style={styles.errorContainer}>
-          <h2>Error:</h2>
           <p>{error}</p>
         </div>
       )}
@@ -219,54 +199,48 @@ const SpeechToTextPage: React.FC = () => {
   );
 };
 
-// Inline styles for simplicity
 const styles: { [key: string]: React.CSSProperties } = {
   container: {
-    padding: "20px",
-    fontFamily: "Arial, sans-serif",
-    maxWidth: "800px",
-    margin: "0 auto",
+    fontFamily: "'Poppins', sans-serif",
     display: "flex",
     flexDirection: "column",
+    alignItems: "center",
     height: "100vh",
+    backgroundColor: "#f4faff",
+    paddingBottom: "20px", // Add padding at the bottom of the entire container
   },
-  buttonContainer: {
-    marginTop: "10px",
-    marginBottom: "20px",
+  header: {
+    width: "100%",
+    backgroundColor: "#4a90e2",
+    padding: "15px",
+    color: "#fff",
+    textAlign: "center",
   },
-  button: {
-    padding: "10px 20px",
-    fontSize: "16px",
-    border: "none",
-    borderRadius: "5px",
-    cursor: "pointer",
-    transition: "background-color 0.3s ease",
-    marginRight: "10px",
-  },
-  startButton: {
-    backgroundColor: "#28a745", // Green
-    color: "white",
-  },
-  stopButton: {
-    backgroundColor: "#dc3545", // Red
-    color: "white",
+  title: {
+    fontSize: "1.8rem",
+    fontWeight: "bold",
+    margin: 0,
   },
   chatContainer: {
     flex: 1,
+    width: "100%",
+    maxWidth: "600px",
     display: "flex",
     flexDirection: "column",
     overflowY: "auto",
-    padding: "10px",
-    backgroundColor: "#f5f5f5",
-    borderRadius: "5px",
-    border: "1px solid #ddd",
+    padding: "15px",
+    backgroundColor: "#fff",
+    borderRadius: "10px",
+    marginTop: "20px",
+    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
   },
   message: {
     maxWidth: "70%",
-    padding: "10px",
     marginBottom: "10px",
+    padding: "10px",
     borderRadius: "10px",
-    boxShadow: "0 1px 1px rgba(0,0,0,0.1)",
+    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+    fontSize: "14px",
   },
   timestamp: {
     display: "block",
@@ -275,13 +249,41 @@ const styles: { [key: string]: React.CSSProperties } = {
     marginTop: "5px",
     textAlign: "right",
   },
+  controls: {
+    marginTop: "20px",
+    display: "flex",
+    justifyContent: "center",
+    gap: "10px",
+    paddingBottom: "30px", // Add padding to push buttons up from the bottom
+  },
+  startButton: {
+    backgroundColor: "#4a90e2",
+    color: "#fff",
+    border: "none",
+    padding: "10px 20px",
+    fontSize: "16px",
+    borderRadius: "5px",
+    cursor: "pointer",
+  },
+  stopButton: {
+    backgroundColor: "#e94e77",
+    color: "#fff",
+    border: "none",
+    padding: "10px 20px",
+    fontSize: "16px",
+    borderRadius: "5px",
+    cursor: "pointer",
+  },
   errorContainer: {
     marginTop: "20px",
-    padding: "20px",
-    backgroundColor: "#ffe6e6",
+    padding: "10px",
+    backgroundColor: "#ffeded",
+    color: "#d9534f",
     borderRadius: "5px",
-    color: "red",
+    textAlign: "center",
+    fontSize: "14px",
   },
 };
+
 
 export default SpeechToTextPage;
