@@ -17,7 +17,6 @@ export default function Home() {
         <Navbar />
         <Landing />
       </div>
-      <Info />
       <Footer />
     </>
   );
