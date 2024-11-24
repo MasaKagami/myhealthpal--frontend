@@ -28,10 +28,10 @@ export default function Navbar() {
 
   return (
     <>
-      <audio ref={audioRef} autoPlay loop>
+      {/* <audio ref={audioRef} autoPlay loop>
         <source src="/audio/zen.mp3" type="audio/mp3" />
         Your browser does not support the audio element.
-      </audio>
+      </audio> */}
       <div className="z-40 sticky top-4 flex py-4 w-full justify-between items-center bg-myblue rounded-full mt-4 px-8">
         <p className="font-bold text-white">myhealthpal</p>
         <div className="flex items-center gap-4">

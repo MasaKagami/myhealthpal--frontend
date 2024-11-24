@@ -10,6 +10,7 @@ import mutedBot from "@/assets/therapist_images/mute.png";
 import talkingBot1 from "@/assets/therapist_images/talk1.png";
 import talkingBot2 from "@/assets/therapist_images/talk2.png";
 import talkingBot4 from "@/assets/therapist_images/talk4.png";
+import Navbar from "@/components/navbar/navbar";
 
 interface Session {
   id: number;
@@ -276,44 +277,42 @@ const SpeechToTextPage: React.FC = () => {
   };
 
   return (
-    <div style={styles.container}>
-      <header style={styles.header}>
-        <h1 style={styles.title}>myhealthpal</h1>
-      </header>
-      <div style={styles.botImageContainer}>
+    <div className="flex flex-col h-screen w-full max-w-[80%] m-auto">
+      <Navbar/>
+      <div className="flex justify-center items-center gap-10 h-full">
         <Image
           src={currentSequence[sequenceIndex]}
           alt="Bot"
-          width={200}
-          height={200}
-          style={styles.botImage}
+          className="w-2/6 h-auto"
         />
+        <div className="flex flex-col flex-1 w-full max-w-[600px] overflow-y-scroll max-h-[350px] shadow-xl border-2 rounded-xl p-4">
+          {messages.map((msg) => (
+            <div
+              key={msg.id}
+              style={{
+                ...styles.message,
+                alignSelf: msg.sender === "You" ? "flex-end" : "flex-start",
+                backgroundColor: msg.sender === "You" ? "#e0f7ff" : "#fff",
+              }}
+            >
+              <strong>{msg.sender}:</strong>
+              <p>{msg.content}</p>
+              <span style={styles.timestamp}>
+                {new Date(msg.timestamp).toLocaleTimeString()}
+              </span>
+            </div>
+          ))}
+          <div ref={messagesEndRef} />
+        </div>
       </div>
-      <div style={styles.chatContainer}>
-        {messages.map((msg) => (
-          <div
-            key={msg.id}
-            style={{
-              ...styles.message,
-              alignSelf: msg.sender === "You" ? "flex-end" : "flex-start",
-              backgroundColor: msg.sender === "You" ? "#e0f7ff" : "#fff",
-            }}
-          >
-            <strong>{msg.sender}:</strong>
-            <p>{msg.content}</p>
-            <span style={styles.timestamp}>
-              {new Date(msg.timestamp).toLocaleTimeString()}
-            </span>
-          </div>
-        ))}
-        <div ref={messagesEndRef} />
-      </div>
+      
       <div style={styles.controls}>
         {isRecording ? (
           <button
             onClick={stopRecording}
             style={styles.stopButton}
             disabled={isBotTalking}
+            className="rounded-full"
           >
             Stop Recording
           </button>
@@ -322,6 +321,7 @@ const SpeechToTextPage: React.FC = () => {
             onClick={startRecording}
             style={styles.startButton}
             disabled={isBotTalking}
+            className="rounded-full bg-myblue"
           >
             Start Recording
           </button>
@@ -337,49 +337,6 @@ const SpeechToTextPage: React.FC = () => {
 };
 
 const styles: { [key: string]: React.CSSProperties } = {
-  container: {
-    fontFamily: "'Poppins', sans-serif",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    height: "100vh",
-    backgroundColor: "#f4faff",
-    paddingBottom: "20px",
-  },
-  header: {
-    width: "100%",
-    backgroundColor: "#4a90e2",
-    padding: "15px",
-    color: "#fff",
-    textAlign: "center",
-  },
-  title: {
-    fontSize: "1.8rem",
-    fontWeight: "bold",
-    margin: 0,
-  },
-  botImageContainer: {
-    marginTop: "20px",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  botImage: {
-    // Optional additional styling
-  },
-  chatContainer: {
-    flex: 1,
-    width: "100%",
-    maxWidth: "600px",
-    display: "flex",
-    flexDirection: "column",
-    overflowY: "auto",
-    padding: "15px",
-    backgroundColor: "#fff",
-    borderRadius: "10px",
-    marginTop: "20px",
-    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-  },
   message: {
     maxWidth: "70%",
     marginBottom: "10px",
@@ -403,21 +360,18 @@ const styles: { [key: string]: React.CSSProperties } = {
     paddingBottom: "30px",
   },
   startButton: {
-    backgroundColor: "#4a90e2",
-    color: "#fff",
+    color: "#ffffff",
     border: "none",
     padding: "10px 20px",
     fontSize: "16px",
-    borderRadius: "5px",
     cursor: "pointer",
   },
   stopButton: {
     backgroundColor: "#e94e77",
-    color: "#fff",
+    color: "#ffffff",
     border: "none",
     padding: "10px 20px",
     fontSize: "16px",
-    borderRadius: "5px",
     cursor: "pointer",
   },
   errorContainer: {
