@@ -51,7 +51,7 @@ export default function UserForm() {
 
         const data = await response.json();
         console.log("User created:", data);
-        router.push("/assessment-medical");
+        router.push(`/assessment-medical?userId=${data.id}`);
       } catch (error: any) {
         setError(error.message);
       } finally {

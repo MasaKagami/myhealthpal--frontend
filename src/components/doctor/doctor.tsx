@@ -1,71 +1,120 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Link from "next/link";
-import Image from "next/image";
+import { useEffect, useState, useRef } from "react";
 
 interface Message {
-  sender: "user" | "ai";
-  text: string;
+  id: number;
+  session: { id: number };
+  sender: string; // "user" or "ChatGPT"
+  content: string;
+  timestamp: string;
 }
 
-export default function DoctorChat() {
+interface MessageResponseDto {
+  userMessage: Message;
+  gptResponse: Message;
+}
+
+const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080";
+
+export default function DoctorChat({ sessionId }: { sessionId: number }) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
-  // Simulated AI response
-  const getAIResponse = async (userMessage: string) => {
-    // Replace this with your AI API logic
-    const response = await fetch("/api/ai-doctor", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: userMessage }),
-    });
+  useEffect(() => {
+    const fetchMessages = async () => {
+      try {
+        const response = await fetch(`${BASE_URL}/api/messages/session/${sessionId}`);
+        if (!response.ok) {
+          throw new Error("Failed to fetch messages");
+        }
+        const data: Message[] = await response.json();
+        setMessages(data);
+      } catch (err) {
+        console.error(err);
+        setError("Failed to load messages. Please refresh the page.");
+      }
+    };
 
-    const data = await response.json();
-    return data.reply || "I'm sorry, I didn't understand that. Can you try again?";
-  };
+    fetchMessages();
+  }, [sessionId]);
+
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
 
   const handleSendMessage = async () => {
     if (!input.trim()) return;
 
-    const userMessage = input.trim();
-    setMessages((prev) => [...prev, { sender: "user", text: userMessage }]);
+    const userMessage = {
+      sender: "user",
+      content: input.trim(),
+      session: { id: sessionId },
+    };
+
+    setMessages((prev) => [
+      ...prev,
+      { ...userMessage, id: Date.now(), timestamp: new Date().toISOString() },
+    ]);
     setInput("");
 
     try {
-      const aiReply = await getAIResponse(userMessage);
-      setMessages((prev) => [...prev, { sender: "ai", text: aiReply }]);
+      const response = await fetch(`${BASE_URL}/api/messages/${sessionId}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(userMessage),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to send message");
+      }
+
+      const data: MessageResponseDto = await response.json();
+      setMessages((prev) => [
+        ...prev,
+        { ...data.gptResponse, sender: "ChatGPT" },
+      ]);
     } catch (err) {
-      setError("Failed to get a response from the AI. Please try again.");
+      console.error(err);
+      setError("Failed to send message. Please try again.");
     }
   };
 
   return (
     <div className="flex flex-col">
-      {/* Chat Window */}
       <div className="h-96 overflow-y-auto p-4 border rounded-lg bg-gray-50">
-        {messages.length === 0 ? (
-          <p className="text-center text-gray-500">Start by typing your symptoms below.</p>
+        {messages.length <= 2 ? (
+          <p className="text-center text-gray-500">
+            Start by typing your symptoms below.
+          </p>
         ) : (
           <div className="space-y-4">
-            {messages.map((message, index) => (
+            {messages.slice(2).map((message) => ( 
               <div
-                key={index}
+                key={message.id}
                 className={`chat ${
                   message.sender === "user" ? "chat-end" : "chat-start"
                 }`}
               >
                 <div
                   className={`chat-bubble ${
-                    message.sender === "user" ? "bg-blue-500 text-white" : "bg-gray-200 text-black"
+                    message.sender === "user"
+                      ? "bg-blue-500 text-white"
+                      : "bg-gray-200 text-black"
                   }`}
                 >
-                  {message.text}
+                  {message.content}
                 </div>
+                <span className="text-xs text-gray-400">
+                  {new Date(message.timestamp).toLocaleTimeString()}
+                </span>
               </div>
             ))}
+            <div ref={messagesEndRef} />
           </div>
         )}
       </div>
@@ -76,7 +125,7 @@ export default function DoctorChat() {
           placeholder="Describe your symptoms..."
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          className="input input-bordered flex-1"
+          className="input input-bordered flex-1 text-white placeholder-grey-400 bg-gray-800"
         />
         <button onClick={handleSendMessage} className="btn btn-primary">
           Send
