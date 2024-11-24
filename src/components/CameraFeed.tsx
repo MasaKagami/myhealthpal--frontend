@@ -163,8 +163,8 @@ const CameraFeed: React.FC<CameraFeedProps> = ({ onVisionResult }) => {
               &times;
             </button>
             <div style={styles.popupContent}>
-              <h2 style={styles.popupTitle}>Hand Detected!</h2>
-              <p style={styles.popupMessage}>Capturing frame and processing...</p>
+              <h2 style={styles.popupTitle}>Medicine Detected!</h2>
+              <p style={styles.popupMessage}>Discussing with Dr. Spigniv...</p>
             </div>
           </div>
         )}
