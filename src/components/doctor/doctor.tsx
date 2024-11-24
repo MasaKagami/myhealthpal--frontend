@@ -85,8 +85,8 @@ export default function DoctorChat({ sessionId }: { sessionId: number }) {
   };
 
   return (
-    <div className="flex flex-col">
-      <div className="h-96 overflow-y-auto p-4 border rounded-lg bg-gray-50">
+    <div className="flex flex-col w-full max-w-3xl">
+      <div className="h-96 overflow-y-auto p-4 border rounded-lg bg-[#ECF1FF]">
         {messages.length <= 2 ? (
           <p className="text-center text-gray-500">
             Start by typing your symptoms below.
@@ -109,7 +109,7 @@ export default function DoctorChat({ sessionId }: { sessionId: number }) {
                 >
                   {message.content}
                 </div>
-                <span className="text-xs text-gray-400">
+                <span className="text-xs text-myblue">
                   {new Date(message.timestamp).toLocaleTimeString()}
                 </span>
               </div>
@@ -125,9 +125,13 @@ export default function DoctorChat({ sessionId }: { sessionId: number }) {
           placeholder="Describe your symptoms..."
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          className="input input-bordered flex-1 text-white placeholder-grey-400 bg-gray-800"
+          className="input input-bordered input-ghost flex-1 text-white focus:bg-[#f5f5f5]  placeholder-grey-400"
         />
-        <button onClick={handleSendMessage} className="btn btn-primary">
+        <button 
+          onClick={handleSendMessage} 
+          className="btn bg-myblue hover:bg-gray-500 text-white border-none"
+          disabled={!input.trim()}
+          >
           Send
         </button>
       </div>

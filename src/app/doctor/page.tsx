@@ -23,16 +23,16 @@ export default function AIDoctorPage() {
   }, [router]);
 
   return (
-    <>
+    <div className="flex flex-col h-screen w-full max-w-[80%] m-auto">
       <Navbar />
-      <div className="container mx-auto p-4">
-        <div className="py-8">
-          <h1 className="text-4xl font-bold text-center mb-6 text-primary">
-            AI Doctor
-          </h1>
-          <p className="text-center text-lg text-gray-600 mb-8">
-            Describe your symptoms below, and our AI Doctor will provide you with guidance.
-          </p>
+      <div className="w-full h-full mx-auto">
+        <div className="flex flex-col h-full justify-center items-center gap-6">
+          <div className="flex flex-col gap-2">
+            <h1 className="text-3xl font-bold text-myblue text-center">AI Doctor</h1>
+            <p className="text-center text-lg text-gray-600">
+              Describe your symptoms below, and our AI Doctor will provide you with guidance.
+            </p>
+          </div>
           {sessionId !== null ? (
             <DoctorChat sessionId={sessionId} />
           ) : (
@@ -40,7 +40,6 @@ export default function AIDoctorPage() {
           )}
         </div>
       </div>
-      <Footer />
-    </>
+    </div>
   );
 }
